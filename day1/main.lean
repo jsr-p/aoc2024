@@ -1,12 +1,4 @@
-def read_lines : IO (Array String) := do
-  let stdin ← IO.getStdin
-  let mut lines : Array String := #[]
-  while true do
-    let line ← stdin.getLine
-    if line.isEmpty then
-      break
-    lines := lines.push line.trimRight
-  return lines
+import Aoc.Utils 
 
 def main : IO Unit := do
   let lines ← read_lines

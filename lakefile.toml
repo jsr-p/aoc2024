@@ -1,0 +1,6 @@
+name = "aoc2024"
+version = "0.1.0"
+defaultTargets = ["Aoc"]
+
+[[lean_lib]]
+name = "Aoc"
