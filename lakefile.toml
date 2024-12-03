@@ -4,3 +4,7 @@ defaultTargets = ["Aoc"]
 
 [[lean_lib]]
 name = "Aoc"
+
+[[require]]
+name = "Regex"
+git = "https://github.com/bergmannjg/regex"
