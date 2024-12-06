@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+lean="lake env lean"
+num=$1
+day="day$num"
+inputfile="$day/input.txt"
+
+if [ -z "$num" ]; then
+	echo "Usage: $0 <day>"
+	exit 1
+fi
+
+if [ ! -f "day$day/main.lean" ]; then
+	echo "Downloading input for $day"
+	aocd "$num" > "$inputfile"
+fi
+
+echo "Running $day"
+$lean --run "$day"/main.lean < "$day"/input.txt

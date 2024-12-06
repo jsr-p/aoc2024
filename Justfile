@@ -26,3 +26,8 @@ day5:
     mkdir -p day5
     aocd 5 > day5/input.txt
     {{lean}} --run day5/main.lean < day5/input.txt
+
+day6:
+    mkdir -p day6
+    aocd 6 > day6/input.txt
+    {{lean}} --run day6/main.lean < day6/input.txt

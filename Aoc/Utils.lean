@@ -28,3 +28,8 @@ def read_lines_lists (converter : String → α) : IO (Array (List α)) := do
       break
     lines := lines.push (line.trimRight.splitOn " " |>.map converter)
   return lines
+
+def read_file (filePath : String) : IO String := do
+  let content <- IO.FS.readFile filePath
+  return content
+
