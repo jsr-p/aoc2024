@@ -10,10 +10,5 @@ if [ -z "$num" ]; then
 	exit 1
 fi
 
-if [ ! -f "day$day/main.lean" ]; then
-	echo "Downloading input for $day"
-	aocd "$num" > "$inputfile"
-fi
-
 echo "Running $day"
-$lean --run "$day"/main.lean < "$day"/input.txt
+$lean --run "$day"/main.lean < "$inputfile"

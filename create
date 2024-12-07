@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+num=$1
+day="day$num"
+inputfile="$day/input.txt"
+
+if [ -z "$day" ]; then
+	echo "Usage: $0 <day>"
+	exit 1
+fi
+
+mkdir -p "$day"
+touch "$day/main.lean"
+echo "import Aoc.Utils" >> "$day/main.lean"
+
+if [ ! -f "day$day/main.lean" ]; then
+	echo "Downloading input for $day"
+	aocd "$num" > "$inputfile"
+fi

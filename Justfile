@@ -1,7 +1,5 @@
 lean := "lake env lean"
 
-all: day1 day2
-
 day1:
     mkdir -p day1
     aocd 1 > day1/input.txt
