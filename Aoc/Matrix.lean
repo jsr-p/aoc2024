@@ -4,7 +4,7 @@ structure Field where
   i : Nat
   j : Nat
   c : Char
-deriving Repr
+deriving Repr, BEq
 
 instance : ToString Field where
   toString x := s!"Field(i={x.i}, j={x.j}, c={x.c})"
@@ -18,6 +18,11 @@ abbrev Vec.inBounds (vec : Vec n α) (i : Nat) : Prop :=
 def Vec.get (vec : Vec n α) (i : Nat) (ok : vec.inBounds i) : α :=
   vec.val.get ⟨i, ok⟩
 
+def Vec.gett (vec : Vec n α) (i : Fin n) : α :=
+  have hsize := vec.property
+  let i_valid := Fin.cast (Eq.symm hsize)  i
+  vec.val.get i_valid 
+
 def Vec.get? (vec : Vec n α) (i : Nat) : Option α := 
   vec.val.get? i
 
@@ -27,8 +32,12 @@ def getElem {n : Nat} {a : Type} (v : Vec n a) (i : Fin n) : a :=
 instance : GetElem (Vec n α) Nat α Vec.inBounds where
   getElem := Vec.get
 
-
 abbrev Matrix (n m : Nat) (a : Type) := Vec n (Vec m a)
+
+def Matrix.get_value (mat : Matrix n m α) (i : Fin n) (j : Fin m) := 
+  let row := mat.gett i
+  let val := row.gett j
+  val
 
 structure Game where
   n : Nat
@@ -82,6 +91,16 @@ def get_field_mat (mat : Matrix n m Field) (i j : Nat) : Option Field :=
       some field
     else none
   else none
+
+/- def get_field_mat_s (mat : Matrix n m Field) (i : Fin n) (j : Fin m) : Field := -/ 
+/-   let row := mat.get i -/
+/-   if h1 : mat.inBounds i  then -/ 
+/-     let row := mat.get i h1 -/
+/-     if h2 : row.inBounds j then -/ 
+/-       let field := row.get j h2 -/
+/-       some field -/
+/-     else none -/
+/-   else none -/
 
 
 def split_data (s : String) : List (List Field) := 
@@ -155,3 +174,21 @@ def extract_fields (game : Game) :=
 
 def equal_coords (f1 f2 : Field) : Bool := 
   f1.i == f2.i && f1.j == f2.j
+
+def cartesian_pairs (l1 : List α) (l2 : List β) : List (α × β):= 
+  l1 |>.map (
+    λi => l2 |>.map (
+      λj => (i, j)
+    )
+  )  
+    |> List.join
+
+theorem mem_range_right {m n : Nat} : m ∈ List.range n → m < n := by
+  simp[*]
+
+def range_fin (n : Nat) : List (Fin n) := 
+  let range := List.range n
+  let out := range.attach.map (
+    λi => ⟨i, mem_range_right i.property⟩
+  )
+  out
