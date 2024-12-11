@@ -29,3 +29,9 @@ day6:
     mkdir -p day6
     aocd 6 > day6/input.txt
     {{lean}} --run day6/main.lean < day6/input.txt
+
+day11:
+    lake build day11
+    ./.lake/build/bin/day11 stoneaux 25
+    ./.lake/build/bin/day11 stoneaux 75
+

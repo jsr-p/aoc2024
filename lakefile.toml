@@ -10,5 +10,7 @@ name = "Regex"
 git = "https://github.com/bergmannjg/regex"
 
 [[lean_exe]]
-name = "day6"
-root = "Main"
+name = "day11"
+root = "main"
+exeName = "day11"
+srcDir = "day11"
