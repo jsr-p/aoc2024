@@ -23,6 +23,29 @@ def Vec.gett (vec : Vec n α) (i : Fin n) : α :=
   let i_valid := Fin.cast (Eq.symm hsize)  i
   vec.val.get i_valid 
 
+
+theorem same_size_insert (arr : Array α) (i : Fin arr.size) (val : α) :
+  (arr.set i val).size = arr.size := by
+    have h0 := Array.size_set arr i val
+    apply h0
+
+def update_fin_set_array (arr : Array α) (i j: Fin arr.size) (val : α) := 
+  have hx : j < (arr.set i val).size := by
+    rw [Array.size_set arr i val]
+    apply j.isLt
+  have f_u : Fin (arr.set i val).size := ⟨j, by assumption⟩
+  f_u
+
+def Vec.sett (vec : Vec n α) (i : Fin n) (val : α) : Vec n α :=
+  have hsize := vec.property
+  have i : Fin vec.val.size := by
+    rw [hsize]
+    apply i
+  let row := vec.val.set i val
+  have h := same_size_insert vec.val i val
+  have hfin := Eq.trans h hsize
+  ⟨row, hfin⟩
+
 def Vec.get? (vec : Vec n α) (i : Nat) : Option α := 
   vec.val.get? i
 
@@ -38,6 +61,11 @@ def Matrix.get_value (mat : Matrix n m α) (i : Fin n) (j : Fin m) :=
   let row := mat.gett i
   let val := row.gett j
   val
+
+def Matrix.update_value (mat : Matrix n m α) (i : Fin n) (j : Fin m) (val : α) := 
+  let row := mat.gett i
+  let row := row.sett j val
+  mat.sett i row
 
 structure Game where
   n : Nat
@@ -175,6 +203,15 @@ def extract_fields (game : Game) :=
 def equal_coords (f1 f2 : Field) : Bool := 
   f1.i == f2.i && f1.j == f2.j
 
+
+def cartesian_pairs_tup (l1 : List α) (l2 : List β) : List (List (α × β)) := 
+  l1 |>.map (
+    λi => l2 |>.map (
+      λj => (i, j)
+    )
+  )  
+
+
 def cartesian_pairs (l1 : List α) (l2 : List β) : List (α × β):= 
   l1 |>.map (
     λi => l2 |>.map (
@@ -192,3 +229,90 @@ def range_fin (n : Nat) : List (Fin n) :=
     λi => ⟨i, mem_range_right i.property⟩
   )
   out
+
+def vec (n : Nat) : Vec n Nat := 
+  ⟨List.replicate n 0 |>.toArray, by simp⟩
+
+def construct_vec (n : Nat) : Vec n Nat := 
+  ⟨List.replicate n 0 |>.toArray, by simp⟩
+
+def construct_mat (n m: Nat) : Matrix n m Nat := 
+  ⟨
+  Array.range n |>.map (
+    λ_ => ⟨List.replicate m 0 |>.toArray, by simp⟩
+  ),
+  by simp
+  ⟩
+  
+def emp_measure_col (mat : Matrix n m Nat) :=
+  have h : (range_fin m).length = m := by
+    simp [range_fin]
+  let out : Vec m Nat := ⟨
+    range_fin m |>.map (
+        λj => 
+          let rangen := range_fin n 
+          rangen.map (
+            λi => mat.get_value i j
+            )
+            |>.foldl (· + ·) 0
+      ) 
+      |>.toArray,
+    by simp; apply h
+    ⟩
+  /- dbg_trace s!"{out}" -- Debug print -/
+  out.val.map (λv => if v == 0 then 1 else 0) |>.foldl (· + ·) 0
+
+
+def emp_measure_row (mat : Matrix n m Nat) :=
+  have h : (range_fin n).length = n := by
+    simp [range_fin]
+  let out : Vec n Nat := ⟨
+    range_fin n |>.map (
+        λi => 
+          range_fin m 
+          |>.map (
+            λj => mat.get_value i j
+            )
+          |>.foldl (· + ·) 0
+      ) 
+      |>.toArray,
+    by simp; apply h
+    ⟩
+  out.val.map (λv => if v == 0 then 1 else 0) |>.foldl (· + ·) 0
+
+def emp_measure (mat : Matrix n m Nat) :=
+  (emp_measure_row mat, emp_measure_col mat)
+
+
+
+def rs_indices (n m : Nat) : List (Nat × Nat):= 
+  let val := (max n m) + 1  -- max when unequal n & m !
+  let seps := List.zip (List.replicate val 0) (List.range val)
+    |>.map (fun (i, j) => i + j * m)
+  List.zip seps (seps.drop 1) 
+
+def reshape (n m : Nat) (mat : List α) := 
+  let rs := rs_indices n m
+  rs.map (fun (i, j) => (mat.take j |>.drop i))
+
+
+/- def reshape_mat (n m : Nat) (mat : List α) : Matrix n m α := -/ 
+/-   let rs := rs_indices n m -/
+/-   rs.map ( -/
+/-     fun (i, j) => -/ 
+/-       let row := (mat.take j |>.drop i) -/
+/-       if h : row.length == m then -/
+/-         row -/
+/-   ) -/
+
+
+/- def test : IO Unit := -/ 
+/-   let (n, m) := (103, 101) -/
+/-   let ranges : List Field := cartesian_pairs (range_fin n) (range_fin m) -/
+/-     |>.map (λ(f1, f2) => ⟨f1.val, f2.val, '.'⟩) -/
+/-   let rs := reshape n m ranges -/
+/-   IO.println s!"{rs}" -/
+
+/- #eval rs_indices 103 101 -/
+/- #eval test -/
+
