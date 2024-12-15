@@ -241,4 +241,3 @@ def construct_edge_graph_simple (edges : List Edge) :=
       acc.insert f1 f2
   ) graph
   graph
-

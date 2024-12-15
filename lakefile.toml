@@ -20,3 +20,9 @@ name = "day12"
 root = "main"
 exeName = "day12"
 srcDir = "day12"
+
+[[lean_exe]]
+name = "day14"
+root = "main"
+exeName = "day14"
+srcDir = "day14"

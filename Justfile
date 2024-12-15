@@ -35,3 +35,6 @@ day11:
     ./.lake/build/bin/day11 stoneaux 25
     ./.lake/build/bin/day11 stoneaux 75
 
+day14:
+    lake build day14
+    ./.lake/build/bin/day14 2 single 6876
